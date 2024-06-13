@@ -1,19 +1,65 @@
-## Library management system
+## Library Management System using
+Spring Boot
 
-## Introduction
 
-Library management system Project is a web application built using Spring Boot framework. It provides API for manageing books , users and patrons .
+## Project Description
 
-Before running this application, you need to have the following software installed:
+ Library Management System API using Spring Boot. The system allows librarians
+to manage books, patrons, and borrowing records.
+
+## Entities:
+-Book: Includes attributes like ID, title, author, publication year, ISBN, etc.
+-Patron: Contains details like ID, name, contact information.
+-Borrowing Record: Tracks the association between books and patrons,
+including borrowing and return dates.
+
+## API Endpoints:
+# Book management endpoints :
+●GET /api/books: Retrieve a list of all books. <br />
+●GET /api/books/{id}: Retrieve details of a specific book by ID. <br />
+● POST /api/books: Add a new book to the library.<br />
+● PUT /api/books/{id}: Update an existing book's information.<br />
+● DELETE /api/books/{id}: Remove a book from the library.<br />
+● Patron management endpoints:<br />
+● GET /api/patrons: Retrieve a list of all patrons.<br />
+● GET /api/patrons/{id}: Retrieve details of a specific patron by ID.<br />
+● POST /api/patrons: Add a new patron to the system.<br />
+● PUT /api/patrons/{id}: Update an existing patron's information.<br />
+● DELETE /api/patrons/{id}: Remove a patron from the system.<br />
+● Borrowing endpoints:<br />
+● POST /api/borrow/{bookId}/patron/{patronId}: Allow a patron to
+borrow a book.<br />
+● PUT /api/return/{bookId}/patron/{patronId}: Record the return of a borrowed book by a patron.<br />
+
+
+## Data storage :
+this project uses Spring JPA with mysql database .
+
+## Validation and Error Handling:
+● Implementing input validation for API requests using spring validator .
+
+## Security:
+● Implementing JWT-based authorization using spring security to protect the API endpoints.
+
+## Aspects :
+● Implementing logging using Aspect-Oriented Programming (AOP) to log some method calls, exceptions, and performance metrics of certain operations like book additions, updates, and patron transactions.
+
+## Caching (Optional - for extra credit):
+● Utilize Spring's caching mechanisms to cache frequently accessed data, such as book details or patron information, to improve system performance.
+
+## Transaction Management:
+● Implementing declarative transaction management using Spring's @Transactional annotation to ensure data integrity during critical operations.
+
+## Testing:
+writing unit tests to validate the functionality of the API Using JUNIT and Mockito .
+
+
+
+# Before running this application, you need to have the following software installed:
 
 - Java Development Kit (JDK) 8 or higher
 - Maven
 
-- ## Description :
-- this project using spring boot with spring JPA and spring security , and  JUNIT and mocketio  for testing .
-- this project implementing JWT strategy for securing the apis .
-- you can make CRUD operations for books, patrons , and borrowing .
-- for sensitive database operation transactions is being used .
 
 
 ## installation 
