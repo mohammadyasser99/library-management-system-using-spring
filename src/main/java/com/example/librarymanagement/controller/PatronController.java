@@ -2,6 +2,8 @@ package com.example.librarymanagement.controller;
 
 import java.util.List;
 
+import com.example.librarymanagement.repository.PatronRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,13 +23,28 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 public class PatronController {
 private final  PatronService patronService;
+    private final PatronRepository patronRepository;
+
+    @RequestMapping("/login")
+    public Patron login(Authentication authentication) {
+        List<Patron> patrons = patronRepository.findByEmail(authentication.getName());
+        if(patrons.size() > 0) {
+            return patrons.get(0);
+        }else {
+            return null;
+        }
+    }
+
+//    @RequestMapping("/register")
+//    public void register(@RequestBody Patron patron) {
+//        patronService.addPatron(patron);
+//    }
+
     @PostMapping("/patrons")
     public void addPatron(
         @RequestBody Patron patron
     ) {
-        patronService.addPatron(
-       patron
-        );
+        patronService.addPatron(patron);
     }
 
     @GetMapping("/patrons")

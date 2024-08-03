@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,14 +19,22 @@ public class Patron {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String email;
     private int phoneNumber;
     private String contactInfo;
 
-    public Patron(String name, String email, int phoneNumber , String contactInfo) {
+    @Email(message = "Please provide a valid email")
+    private String email;
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    private String password;
+
+    private String role;
+
+    public Patron(String name, int phoneNumber, String contactInfo, String email, String password, String role) {
         this.name = name;
-        this.email = email;
         this.phoneNumber = phoneNumber;
         this.contactInfo = contactInfo;
+        this.email = email;
+        this.password = password;
+        this.role = role;
     }
 }

@@ -33,8 +33,8 @@ public class PatronsControllerTest {
     void testGetPatrons() {
         // Arrange
         List<Patron> patrons = new ArrayList<>();
-        patrons.add(new Patron("John Doe", "john@example.com", 123456789, "Address 1"));
-        patrons.add(new Patron("Jane Smith", "jane@example.com", 987654321, "Address 2"));
+        patrons.add(new Patron("John Doe", 12,"lerfn" ,"mohamed@yahoo.con","mohamed","admin"));
+        patrons.add(new Patron("John Doe", 12,"lerfn" ,"mohamed12@yahoo.con","mohamed","admin"));
         when(patronService.getPatrons()).thenReturn(patrons);
 
         // Act

@@ -1,17 +1,8 @@
 package com.example.librarymanagement.security;
 
-
-import com.example.librarymanagement.filters.AuthoritiesLoggingAfterFilter;
-import com.example.librarymanagement.filters.AuthoritiesLoggingAtFilter;
-import com.example.librarymanagement.filters.CsrfCookieFilter;
-import com.example.librarymanagement.filters.JWTTokenGeneratorFilter;
-import com.example.librarymanagement.filters.JWTTokenValidatorFilter;
-import com.example.librarymanagement.filters.RequestValidationBeforeFilter;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,6 +13,7 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,43 +21,32 @@ import java.util.Collections;
 @Configuration
 public class ProjectSecurityConfig {
 
-
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
-        requestHandler.setCsrfRequestAttributeName("_csrf");
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-            @Override
-            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(Collections.singletonList("*"));
-                config.setAllowedMethods(Collections.singletonList("*"));
-                config.setAllowCredentials(true);
-                config.setAllowedHeaders(Collections.singletonList("*"));
-                config.setExposedHeaders(Arrays.asList("Authorization"));
-                config.setMaxAge(3600L);
-                return config;
-            }
-                })).csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
-                .authorizeHttpRequests((requests)->requests
-                        .requestMatchers("/api/login").authenticated()
-                        .requestMatchers("/swagger-ui/**","/api/register","/api/books","/v3/api-docs").permitAll())
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults()
-);
+        http
+                .csrf(csrf -> csrf.disable()) // Disable CSRF protection
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS handling
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()); // Permit all requests
+
         return http.build();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:4200")); // Adjust as needed
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        configuration.setAllowCredentials(true);
 
-@Bean
-public PasswordEncoder passwordEncoder(){
-    return new BCryptPasswordEncoder();
-}
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.librarymanagement.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -9,5 +10,5 @@ import com.example.librarymanagement.model.Patron;
 
 
 public interface PatronRepository extends JpaRepository<Patron, Long>{
-Optional<Patron> findByEmail(String email);
+List<Patron> findByEmail(String email);
 }

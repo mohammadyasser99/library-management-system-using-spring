@@ -2,6 +2,7 @@ package com.example.librarymanagement.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.librarymanagement.exception.AllReadyExists;
@@ -17,13 +18,13 @@ import lombok.RequiredArgsConstructor;
 public class PatronService {
 
  private final PatronRepository patronRepository;
-
-    public void addPatron(
-          Patron patron) {
-    if (patronRepository.findByEmail(patron.getEmail()).isPresent()) {
+    private final PasswordEncoder passwordEncoder;
+    public void addPatron(Patron patron) {
+    if (patronRepository.findByEmail(patron.getEmail()).size() > 0) {
             System.out.println("Patron already exists");
             throw new AllReadyExists("Patron already exists");
         } else {
+            patron.setPassword(passwordEncoder.encode(patron.getPassword()));
             patronRepository.save(patron);
             System.out.println("Patron added successfully");
         }

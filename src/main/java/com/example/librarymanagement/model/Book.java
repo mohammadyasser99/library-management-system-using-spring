@@ -6,18 +6,17 @@ package com.example.librarymanagement.model;
 
 
 
+import java.sql.Blob;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.util.Base64;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -47,13 +46,39 @@ public class Book {
     @Past
     private Date publishedDate;
 
-    public Book(String title, String author, String isbn, String publisher , Date publishedDate) {
+    @Lob
+    @JsonIgnore
+    private Blob photo;
+
+    // Additional field for Base64 encoded image
+    @Transient
+    private String photoBase64;
+
+    @PostLoad
+    private void postLoad() {
+        this.photoBase64 = encodeImageToBase64(this.photo);
+    }
+
+    public Book(String title, String author, String isbn, String publisher, Date publishedDate, Blob imageData) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.publisher = publisher;
         this.publishedDate = publishedDate;
+        this.photo = imageData;
+        this.photoBase64 = encodeImageToBase64(imageData);
     }
 
+    private String encodeImageToBase64(Blob blob) {
+        if (blob != null) {
+            try {
+                byte[] imageBytes = blob.getBytes(1, (int) blob.length());
+                return Base64.getEncoder().encodeToString(imageBytes);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
 }
